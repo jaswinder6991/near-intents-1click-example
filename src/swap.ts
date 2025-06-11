@@ -1,51 +1,53 @@
+import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
+
 import {
-  GetExecutionStatusResponse,
-  OneClickService,
-  QuoteRequest,
-} from "@defuse-protocol/one-click-sdk-typescript";
+  getAccount,
+  getAccountBalanceOfMultiToken,
+  transferMultiTokenForQuote,
+} from "./account";
+import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
+import { NEAR } from "@near-js/tokens";
 
-import { Account } from "@near-js/accounts";
-import { JsonRpcProvider } from "@near-js/providers";
-import { KeyPairSigner } from "@near-js/signers";
-import {
-  ACCOUNT_ID,
-  ACCOUNT_PRIVATE_KEY,
-  INTENTS_CONTRACT_ID,
-} from "./constants";
+// Loading environment variables
+require("dotenv").config({ path: ".env" });
 
-async function swap(
-  inputToken: string,
-  outputToken: string,
-  inputAmount: bigint
-): Promise<void> {
-  const provider = new JsonRpcProvider({
-    url: "https://rpc.mainnet.fastnear.com",
-  });
+interface SwapOptions {
+  inputToken: string;
+  outputToken: string;
+  inputAmount: bigint;
+  slippageTolerance: number;
+}
 
-  const signer = KeyPairSigner.fromSecretKey(ACCOUNT_PRIVATE_KEY);
-
-  const account = new Account(ACCOUNT_ID, provider, signer);
-
-  const balance = BigInt(
-    (await provider.callFunction(INTENTS_CONTRACT_ID, "mt_balance_of", {
-      token_id: inputToken,
-      account_id: account.accountId,
-    })) as string
+async function swap({
+  inputToken,
+  outputToken,
+  inputAmount,
+  slippageTolerance,
+}: SwapOptions): Promise<void> {
+  console.log(
+    `You are about to exchange ${inputToken} tokens for ${outputToken}`
   );
 
-  if (balance <= inputAmount) {
-    console.error(`Insufficient balance of ${inputToken} for swapping`);
-    process.exit(1);
+  const account = getAccount();
+
+  console.log(
+    `Checking the balance of ${inputToken} for the account ${account.accountId}`
+  );
+  const balance = await getAccountBalanceOfMultiToken(account, inputToken);
+
+  if (balance < inputAmount) {
+    throw new Error(
+      `Insufficient balance of ${inputToken} for swapping (required: ${inputAmount}, your: ${balance})`
+    );
   }
 
   const deadline = new Date();
   deadline.setMinutes(deadline.getMinutes() + 5);
 
-  // To-Do: handle errors
-  const { quote } = await OneClickService.getQuote({
+  const quote = await getQuote({
     dry: false,
     swapType: QuoteRequest.swapType.EXACT_INPUT,
-    slippageTolerance: 50, // 0.5%
+    slippageTolerance: slippageTolerance,
     depositType: QuoteRequest.depositType.INTENTS,
     originAsset: inputToken,
     destinationAsset: outputToken,
@@ -57,56 +59,24 @@ async function swap(
     deadline: deadline.toISOString(),
   });
 
-  if (!quote.depositAddress) {
-    console.error(
-      `The invalid quote was returned from API, "depositAddress" is missing!`
-    );
-    process.exit(1);
-  }
+  await transferMultiTokenForQuote(account, quote, inputToken);
 
-  console.log(`Fetched a swap quote from 1Click API`, quote);
+  await waitUntilQuoteExecutionCompletes(quote);
 
-  await account.callFunction({
-    contractId: INTENTS_CONTRACT_ID,
-    methodName: "mt_transfer",
-    args: {
-      token_id: inputToken,
-      receiver_id: quote.depositAddress!,
-      amount: quote.amountIn,
-    },
-    deposit: 1,
-  });
-
-  let attempts = 20;
-  let lastResult;
-  while (attempts > 0) {
-    const result = await OneClickService.getExecutionStatus(
-      quote.depositAddress!
-    );
-
-    lastResult = result;
-
-    if (result.status === GetExecutionStatusResponse.status.SUCCESS) {
-      console.log(`Intent was settled successfully!`);
-      process.exit(0);
-    }
-
-    console.log(`Current status is ${result.status}`);
-
-    // wait three second
-    await new Promise((res) => setTimeout(res, 3_000));
-    attempts -= 1;
-  }
-
-  throw new Error(
-    `Intent hasn't been settled after 15 seconds - ${JSON.stringify(
-      lastResult
-    )}`
-  );
+  console.log(`Swap was settled successfully!`);
 }
 
-swap(
-  "nep141:btc.omft.near", // inputs as Bitcoin
-  "nep141:eth.omft.near", // inputs as Ethereum
-  BigInt(2) // 2 satoshi
-);
+swap({
+  inputToken: "nep141:wrap.near",
+  outputToken: "nep141:eth.omft.near",
+  inputAmount: NEAR.toUnits("0.1"),
+  slippageTolerance: 10, // 0.1%
+}).catch((error: unknown) => {
+  const { styleText } = require("node:util");
+
+  if (error instanceof Error) {
+    console.error(styleText("red", error.message));
+  } else {
+    console.error(styleText("red", JSON.stringify(error)));
+  }
+});

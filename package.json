@@ -12,13 +12,18 @@
     "@near-js/providers": "^2.0.2",
     "@near-js/signers": "^2.0.2",
     "@near-js/tokens": "^2.0.2",
+    "dotenv": "^16.5.0",
     "typescript": "^5.7.3"
   },
   "devDependencies": {
     "@types/node": "^22.13.1",
     "ts-node": "^10.9.2"
   },
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
+    "tokens": "ts-node src/tokens.ts",
     "deposit": "ts-node src/deposit.ts",
     "swap": "ts-node src/swap.ts",
     "withdraw": "ts-node src/withdraw.ts"
