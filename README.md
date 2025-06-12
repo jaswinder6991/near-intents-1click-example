@@ -4,9 +4,10 @@ This repository provides a set of Node.js scripts to help you interact with NEAR
 
 You’ll walk through a complete example of how to:
 
-- Deposit `NEAR` tokens as `BTC` into the Intents contract;
-- Swap `BTC` for `ETH` without ever leaving NEAR Protocol;
-- Withdraw `ETH` tokens to your wallet on the Arbitrum network (chosen here for its low transaction fees).
+- Deposit `NEAR` tokens as a cross-chain asset on Near;
+- Swap `NEAR` for `ETH` without ever leaving NEAR Protocol;
+- Withdraw `ETH` tokens to your wallet on the Arbitrum network (chosen here for its low transaction fees);
+- Deposit `ETH` from Arbitrum back to a cross-chain asset.
 
 ## Environment Setup
 
@@ -53,16 +54,21 @@ You’ll walk through a complete example of how to:
 
 3. **Set up environment variables**
 
-   Copy the example environment file
+   Copy the example environment file and fill it in with the appropriate values
 
    ```sh
    cp .env.example .env
    ```
 
-   - **Get your account private key (if stored in local CLI config)**
+   - **Get Near Account private key (if stored in local CLI config)**
+
      ```sh
      near account export-account <your_account> using-private-key network-config mainnet
      ```
+
+   - **Get Arbitrum Account private key**
+
+     Follow [this guide](https://support.metamask.io/ru/configure/accounts/how-to-export-an-accounts-private-key/) to export the private key of your Arbitrum wallet from MetaMask.
 
 Now that your environment is set up, let’s define the objective for this walkthrough.
 
@@ -128,7 +134,7 @@ It’s seamless, fast, and you don’t need to babysit anything. Just submit you
 
 You’ve made it to the Scripts section — this is where you’ll walk through the full swap flow step by step using real assets.
 
-### Deposit
+### Deposit native `NEAR`
 
 Let’s start by funding your account. As we saw earlier, your balances are at zero — so let’s change that.
 
@@ -142,7 +148,7 @@ Want to deposit a different amount? You can adjust the parameters passed to the 
 
 > We recommend depositing at least 0.1 NEAR — anything less may be rejected by solvers due to minimum fulfillment thresholds.
 
-### Swap
+### Swap `ETH` for `NEAR`
 
 With the cross-chain `NEAR` asset in your account, it’s time to perform the swap. You can check your updated balances using the same command as before — just to confirm the asset is there.
 
@@ -154,7 +160,7 @@ yarn run swap
 
 Want to swap a different amount? You can adjust the parameters passed to the `swap()` function in `src/swap.ts` file.
 
-### Withdraw
+### Withdraw `ETH` to Arbitrum
 
 You should now see `ETH` in your account — feel free to verify balances again.
 
@@ -174,6 +180,20 @@ yarn run withdraw
 ```
 
 Once the transaction is complete, you’ll get a link to view it on the Arbitrum Explorer — confirm there that your funds arrived.
+
+### Deposit `ETH` back from Arbitrum
+
+Now that you have `ETH` on Arbitrum, let’s walk through sending it back to Near as a cross-chain asset.
+
+Before running the script, make sure to update the `inputAmount` in the parameters passed to the `deposit()` function in the `src/deposit_arb.ts` file. Keep in mind that you can’t transfer your entire `ETH` balance — some of it will be needed to cover transaction fees. Make sure to use an amount slightly below your available balance.
+
+Run the following command:
+
+```sh
+yarn run deposit_arbitrum
+```
+
+Once the quote has been executed, use the previously mentioned balance command to check your cross-chain asset balances and confirm the update.
 
 ## Further Ideas — Challenge Yourself
 

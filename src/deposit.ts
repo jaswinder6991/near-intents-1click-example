@@ -3,7 +3,7 @@ import {
   depositNearAsMultiToken,
   getAccount,
   getAccountBalanceOfNear,
-} from "./account";
+} from "./near";
 
 // Loading environment variables
 require("dotenv").config({ path: ".env" });
