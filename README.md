@@ -28,7 +28,7 @@ Now let’s say you have `BTC` bridged to NEAR and want to swap it for `ETH` als
 
 Each quote includes a `depositAddress`. If you're happy with the terms, just send the input tokens to that address. That’s it. The solver will pick up your transaction and complete the swap shortly after.
 
-If for one reason or another the solver can’t fulfill your request, you will be refunded your tokens automatically.
+If for one reason or another the solver can’t fulfill your request, you will be refunded your tokens to the `refundTo` address you specified when requesting the quote.
 
 >[!TIP]
 > You can find the full API reference [here](https://docs.near-intents.org/near-intents/integration/distribution-channels/1click-api#post-v0-quote)
