@@ -24,6 +24,7 @@ Suppose you want to swap native `BTC` on Bitcoin for `ETH` on Ethereum. That’s
 
 Now let’s say you have `BTC` bridged to NEAR and want to swap it for `ETH` also on NEAR. This time, you will use the NEAR-native representations of both tokens. You’d set `depositType` to `INTENTS` and `recipientType` to `INTENTS`. The entire swap happens on NEAR with just one transaction, usually finalized in a second
 
+
 ### What Happens After You Get a Quote?
 
 Each quote includes a `depositAddress`. If you're happy with the terms, just send the input tokens to that address. That’s it. The solver will pick up your transaction and complete the swap shortly after.
@@ -32,7 +33,6 @@ If for one reason or another the solver can’t fulfill your request, you will b
 
 >[!TIP]
 > You can find the full API reference [here](https://docs.near-intents.org/near-intents/integration/distribution-channels/1click-api#post-v0-quote)
-
 
 ---
 

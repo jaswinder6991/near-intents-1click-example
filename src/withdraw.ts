@@ -4,7 +4,7 @@ import {
   getAccount,
   getAccountBalanceOfMultiToken,
   transferMultiTokenForQuote,
-} from "./account";
+} from "./near";
 import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
 
 // Loading environment variables

@@ -1,43 +1,46 @@
-import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
-
+import { getAccount } from "./near";
+import { arbitrum } from "viem/chains";
 import {
-  getAccount,
-  getAccountBalanceOfMultiToken,
-  transferMultiTokenForQuote,
-} from "./near";
+  getAccountBalanceOfEthereum,
+  getEvmAccount,
+  transferEthereumForQuote,
+} from "./evm";
 import { getQuote, waitUntilQuoteExecutionCompletes } from "./intents";
-import { NEAR } from "@near-js/tokens";
+import { QuoteRequest } from "@defuse-protocol/one-click-sdk-typescript";
 
 // Loading environment variables
 require("dotenv").config({ path: ".env" });
 
-interface SwapOptions {
+interface DepositOptions {
   inputToken: string;
   outputToken: string;
   inputAmount: bigint;
   slippageTolerance: number;
 }
 
-async function swap({
+const CHAIN = arbitrum;
+
+async function deposit({
   inputToken,
   outputToken,
   inputAmount,
   slippageTolerance,
-}: SwapOptions): Promise<void> {
+}: DepositOptions): Promise<void> {
   console.log(
-    `You are about to exchange ${inputToken} tokens for ${outputToken}`
+    `You are about to deposit ETH from Arbitrum to a cross-chain asset ${outputToken} on Near`
   );
 
   const account = getAccount();
+  const arbitrumAccount = getEvmAccount();
 
   console.log(
-    `Checking the balance of ${inputToken} for the account ${account.accountId}`
+    `Checking the balance of ETH for the account ${arbitrumAccount.address}`
   );
-  const balance = await getAccountBalanceOfMultiToken(account, inputToken);
+  const balance = await getAccountBalanceOfEthereum(arbitrumAccount, CHAIN);
 
   if (balance < inputAmount) {
     throw new Error(
-      `Insufficient balance of ${inputToken} for swapping (required: ${inputAmount}, your: ${balance})`
+      `Insufficient balance of ETH for depositing (required: ${inputAmount}, your: ${balance})`
     );
   }
 
@@ -48,7 +51,7 @@ async function swap({
     dry: false,
     swapType: QuoteRequest.swapType.EXACT_INPUT,
     slippageTolerance: slippageTolerance,
-    depositType: QuoteRequest.depositType.INTENTS,
+    depositType: QuoteRequest.depositType.ORIGIN_CHAIN,
     originAsset: inputToken,
     destinationAsset: outputToken,
     amount: inputAmount.toString(),
@@ -59,17 +62,17 @@ async function swap({
     deadline: deadline.toISOString(),
   });
 
-  await transferMultiTokenForQuote(account, quote, inputToken);
+  transferEthereumForQuote(arbitrumAccount, quote, CHAIN);
 
   await waitUntilQuoteExecutionCompletes(quote);
 
-  console.log(`Swap was settled successfully!`);
+  console.log(`Arbitrum deposit was settled successfully!`);
 }
 
-swap({
-  inputToken: "nep141:wrap.near",
+deposit({
+  inputToken: "nep141:arb.omft.near",
   outputToken: "nep141:eth.omft.near",
-  inputAmount: NEAR.toUnits("0.1"),
+  inputAmount: BigInt(1_000_000_502_520_392),
   slippageTolerance: 10, // 0.1%
 }).catch((error: unknown) => {
   const { styleText } = require("node:util");
