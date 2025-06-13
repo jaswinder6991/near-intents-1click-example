@@ -1,38 +1,66 @@
-# Near 1Click API Integration for multichain swaps (Node.js)
+# Near 1Click API Integration (Node.js)
 
 This repository provides a set of Node.js scripts to help you interact with NEAR Intents and the [1Click API](https://docs.near-intents.org/near-intents/integration/distribution-channels/1click-api) — a powerful new abstraction for cross-chain swaps.
 
-You’ll walk through a complete example of how to:
+The examples in this repository show how to:
 
-- Deposit `NEAR` tokens as `BTC` into the Intents contract;
-- Swap `BTC` for `ETH` without ever leaving NEAR Protocol;
-- Withdraw `ETH` tokens to your wallet on the Arbitrum network (chosen here for its low transaction fees).
+- [Deposit](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/deposit.ts) `NEAR` tokens into the Intents contract
+- [Swap](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/swap.ts) `NEAR` for `ETH` on NEAR Intents
+- [Withdraw](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/withdraw.ts) the `ETH` tokens to Arbitrum
+- [Deposit](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/deposit_arb.ts) the `ETH` tokens from Arbitrum to NEAR Intents again
+
+---
+
+## 1Click API
+
+At its core, the 1Click API is built to generate swap quotes between different tokens, no matter in which chain they are located. It abstracts away the complexities of cross-chain swaps, allowing you to focus on the high-level logic of your application.
+
+Each quote gives you all the details you need, including the input/output amounts. When asking for a quote there are two key parameters to pay attention:
+
+- `depositType` – the source of the funds (which chain or asset you’re sending from)
+- `recipientType` – the destination (which chain or asset you want to receive)
+
+Suppose you want to swap native `BTC` on Bitcoin for `ETH` on Ethereum. That’s a **full cross-chain swap**. You’d set `depositType` to `ORIGIN_CHAIN` and `recipientType` to `ORIGIN_CHAIN`. The 1Click API would handle the orchestration, but you’d have to wait for Bitcoin finality before receiving your ETH. That could take several minutes, making it less than ideal for fast operations
+
+Now let’s say you have `BTC` bridged to NEAR and want to swap it for `ETH` also on NEAR. This time, you will use the NEAR-native representations of both tokens. You’d set `depositType` to `INTENTS` and `recipientType` to `INTENTS`. The entire swap happens on NEAR with just one transaction, usually finalized in a second
+
+### What Happens After You Get a Quote?
+
+Each quote includes a `depositAddress`. If you're happy with the terms, just send the input tokens to that address. That’s it. The solver will pick up your transaction and complete the swap shortly after.
+
+If for one reason or another the solver can’t fulfill your request, you will be refunded your tokens automatically.
+
+>[!TIP]
+> You can find the full API reference [here](https://docs.near-intents.org/near-intents/integration/distribution-channels/1click-api#post-v0-quote)
+
+
+---
+
+# Near Intents 1Click Example
 
 ## Environment Setup
 
 1. **Install the Near CLI**
 
-   You'll need [near.cli.rs](near.cli.rs) to interact with the NEAR blockchain from your terminal.
+   You'll need [near.cli.rs](https://github.com/near/near-cli-rs) to interact with the NEAR blockchain from your terminal, you can install with `npm i -g near-cli-rs` 
 
 2. **Create a NEAR account**
 
-   If you don’t already have a NEAR account, you can create one by running:
+   The scripts assume you have a NEAR account (which you will use to control the tokens on NEAR Intents). If you don’t already have a NEAR account, you can create an implicit one (i.e. an account defined by 64 random characters) using the CLI:
 
    ```sh
-   near account create-account
+   near account create-account fund-later use-auto-generation
    ```
 
-   Follow the interactive prompts.
+   You will need to fund the account with NEAR tokens (0.1 N should be more than enough to play around)
 
-3. **Fund Yor Account**
+> [!TIP]
+> If you are at a hackathon, please approach a mentor to request some funds
 
-   The scripts require a small amount of NEAR to execute swaps — 0.1 NEAR is enough for testing. To check your account balance:
+> [!TIP]
+> If you have funds on any chain, you can use the [`NEAR Intents` frontend](https://app.near-intents.org/) to swap tokens to NEAR
 
-   ```sh
-   near tokens <your_account> view-near-balance network-config mainnet now
-   ```
-
-   You should see an available balance greater than 0.1 NEAR.
+---
 
 ## Getting Started
 
@@ -45,7 +73,7 @@ You’ll walk through a complete example of how to:
 
 2. **Install the dependencies**
 
-   Use any package manager, meanwhile we're using `Yarn`
+   Use any package manager, here we are using `Yarn`
 
    ```sh
    yarn install
@@ -53,20 +81,19 @@ You’ll walk through a complete example of how to:
 
 3. **Set up environment variables**
 
-   Copy the example environment file
+   Copy the example environment file and fill the variables (your NEAR `account's Id` and `private key`, as well as your `evm` private key)
 
    ```sh
    cp .env.example .env
    ```
 
-   - **Get your account private key (if stored in local CLI config)**
-     ```sh
-     near account export-account <your_account> using-private-key network-config mainnet
-     ```
+> [!NOTE]
+> If you created a NEAR account using the CLI, you can retrieve its private key with:
+> ```sh
+> near account export-account <your_account> using-private-key network-config mainnet
+> ```
 
-Now that your environment is set up, let’s define the objective for this walkthrough.
-
-We’ll start with 0.1 NEAR tokens in your account. The goal is to swap them into Ethereum tokens and withdraw those tokens to your wallet on the Arbitrum network. If you haven’t yet created an Arbitrum-compatible wallet, here’s a [quick guide to get started](https://support.arbitrum.io/hc/en-gb/articles/19479729907483-How-can-I-add-Arbitrum-network-to-my-wallet).
+---
 
 ## Understanding Multi-token Assets on NEAR
 
@@ -87,48 +114,14 @@ Despite being one token conceptually, `ETH` is displayed as multiple token entri
 To check how many tokens of each asset you own, use the following command:
 
 ```sh
-near contract call-function as-read-only intents.near mt_batch_balance_of json-args '{"account_id": "<your_account>", "token_ids": ["nep141:wrap.near", "nep141:eth.bridge.near", "nep141:eth.omft.near", "nep141:base.omft.near", "nep141:arb.omft.near"]}' network-config mainnet now
+near view intents.near mt_batch_balance_of '{"account_id": "<your_account>", "token_ids": ["nep141:wrap.near", "nep141:eth.bridge.near", "nep141:eth.omft.near", "nep141:base.omft.near", "nep141:arb.omft.near"]}' --networkId mainnet
 ```
 
 Most likely, you'll see an array of zeros, it's totally fine at this point since you don't own any tokens yet.
 
-## Leverage the Power of Cross-chain Assets
+---
 
-You might be thinking: _Cross-chain assets sound great, but how do I actually leverage their power to exchange, let's say `ETH` on Arbitrum for `BTC` on Bitcoin?_
-
-Let’s break it down.
-
-At its core, the 1Click API is built to generate swap quotes. Each quote gives you all the details you need, including the input/output amounts.
-
-You’ll find the full API reference [here](https://docs.near-intents.org/near-intents/integration/distribution-channels/1click-api#post-v0-quote), including a breakdown of all available parameters.
-
-Two key parameters to pay attention to are:
-
-- `depositType` – defines the source of the funds (which chain or asset you’re sending from)
-- `recipientType` – defines the destination (which chain or asset you want to receive)
-
-These parameters let you customize the flow of the swap.
-
-Let’s look at the following scenario.
-
-Suppose you want to swap native `BTC` on Bitcoin for `ETH` on Ethereum. That’s a full cross-chain transaction. You’d set `depositType` to `ORIGIN_CHAIN` and `recipientType` to `ORIGIN_CHAIN`. The 1Click API would handle the orchestration, but you’d have to wait for Bitcoin finality before receiving your ETH. That could take several minutes, making it less than ideal for fast operations.
-
-Now let’s say you have `BTC` bridged to NEAR and want to swap it for `ETH` also on NEAR. This time, you’re using NEAR-native representations of both tokens. You’d set `depositType` to `INTENTS` and `recipientType` to `INTENTS`. The entire swap happens on NEAR with just one transaction, usually finalized in a second.
-That’s the real power of cross-chain assets — they give you the flexibility of multi-chain liquidity with the speed and simplicity of a single chain.
-
-## What Happens After You Get a Quote?
-
-Once you receive a quote, the next step is incredibly simple.
-
-Each quote includes a `depositAddress`. If you're happy with the terms, just send the input tokens to that address. That’s it. The solver will pick up your transaction and complete the swap shortly after.
-
-It’s seamless, fast, and you don’t need to babysit anything. Just submit your part of the deal and let the system handle the rest.
-
-## Scripts
-
-You’ve made it to the Scripts section — this is where you’ll walk through the full swap flow step by step using real assets.
-
-### Deposit
+## [Example 1](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/deposit.ts): Deposit NEAR to NEAR Intents
 
 Let’s start by funding your account. As we saw earlier, your balances are at zero — so let’s change that.
 
@@ -142,7 +135,9 @@ Want to deposit a different amount? You can adjust the parameters passed to the 
 
 > We recommend depositing at least 0.1 NEAR — anything less may be rejected by solvers due to minimum fulfillment thresholds.
 
-### Swap
+---
+
+### [Example 2](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/swap.ts): Swap NEAR to ETH
 
 With the cross-chain `NEAR` asset in your account, it’s time to perform the swap. You can check your updated balances using the same command as before — just to confirm the asset is there.
 
@@ -154,13 +149,13 @@ yarn run swap
 
 Want to swap a different amount? You can adjust the parameters passed to the `swap()` function in `src/swap.ts` file.
 
-### Withdraw
+---
 
-You should now see `ETH` in your account — feel free to verify balances again.
+### [Example 3](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/withdraw.ts): Withdraw ETH to Arbitrum
 
-To complete the flow, let’s withdraw that `ETH` to Arbitrum.
+You should now see `ETH` in your account — feel free to verify balances again. 
 
-Before running, make sure to update:
+Let’s withdraw that `ETH` to Arbitrum. Before running, make sure to update:
 
 - The amount of ETH to withdraw (`inputAmount`)
 - The recipient Arbitrum wallet address (`receiverAddress`)
@@ -174,6 +169,24 @@ yarn run withdraw
 ```
 
 Once the transaction is complete, you’ll get a link to view it on the Arbitrum Explorer — confirm there that your funds arrived.
+
+---
+
+### [Example 4](https://github.com/nearuaguild/near-intents-1click-example/blob/main/src/deposit_arb.ts): Deposit `ETH` back from Arbitrum
+
+Now that you have `ETH` on Arbitrum, let’s walk through sending it back to Near as a cross-chain asset.
+
+Before running the script, make sure to update the `inputAmount` in the parameters passed to the `deposit()` function in the `src/deposit_arb.ts` file. Keep in mind that you can’t transfer your entire `ETH` balance — some of it will be needed to cover transaction fees. Make sure to use an amount slightly below your available balance.
+
+Run the following command:
+
+```sh
+yarn run deposit_arbitrum
+```
+
+Once the quote has been executed, use the previously mentioned balance command to check your cross-chain asset balances and confirm the update.
+
+---
 
 ## Further Ideas — Challenge Yourself
 
