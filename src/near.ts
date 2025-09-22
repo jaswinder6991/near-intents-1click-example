@@ -59,7 +59,7 @@ export async function depositNearAsMultiToken(
   const { transaction } = await account.signAndSendTransaction({
     receiverId: "wrap.near",
     actions: [
-      actionCreators.functionCall("near_deposit", {}, 10n * TGas, amount),
+      actionCreators.functionCall("near_deposit", {}, 10n * TGas, amount + NEAR.toUnits("0.00125")),
       actionCreators.functionCall(
         "ft_transfer_call",
         {
