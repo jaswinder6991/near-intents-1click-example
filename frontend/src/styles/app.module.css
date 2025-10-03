@@ -1,0 +1,438 @@
+.main {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 6rem;
+  min-height: 100vh;
+}
+
+.description {
+  display: inherit;
+  justify-content: inherit;
+  align-items: inherit;
+  font-size: 0.85rem;
+  max-width: var(--max-width);
+  width: 100%;
+  z-index: 2;
+  font-family: var(--font-mono);
+}
+
+.description a {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.description p {
+  position: relative;
+  margin: 0;
+  padding: 1rem;
+  background-color: rgba(var(--callout-rgb), 0.5);
+  border: 1px solid rgba(var(--callout-border-rgb), 0.3);
+  border-radius: var(--border-radius);
+}
+
+.code {
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(25%, auto));
+  max-width: 100%;
+  width: var(--max-width);
+}
+
+.card {
+  padding: 1rem 1.2rem;
+  border-radius: var(--border-radius);
+  background: rgba(var(--card-rgb), 0);
+  border: 1px solid rgba(var(--card-border-rgb), 0);
+  transition: background 200ms, border 200ms;
+}
+
+.card span {
+  display: inline-block;
+  transition: transform 200ms;
+}
+
+.card h2 {
+  font-weight: 600;
+  margin-bottom: 0.7rem;
+}
+
+.card p {
+  margin: 0;
+  opacity: 0.6;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  max-width: 30ch;
+}
+
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  padding: 4rem 0;
+  width: 100%;
+}
+
+.center::before {
+  background: var(--secondary-glow);
+  border-radius: 50%;
+  width: 480px;
+  height: 360px;
+  margin-left: -400px;
+}
+
+.center::after {
+  background: var(--primary-glow);
+  width: 240px;
+  height: 180px;
+  z-index: -1;
+}
+
+.center::before,
+.center::after {
+  content: '';
+  left: 50%;
+  position: absolute;
+  filter: blur(45px);
+  transform: translateZ(0);
+  opacity: 0.3;
+}
+
+.logo {
+  position: relative;
+}
+
+/* Enable hover only on non-touch devices */
+@media (hover: hover) and (pointer: fine) {
+  .card:hover {
+    background: rgba(var(--card-rgb), 0.1);
+    border: 1px solid rgba(var(--card-border-rgb), 0.15);
+  }
+
+  .card:hover span {
+    transform: translateX(4px);
+  }
+}
+
+@media (prefers-reduced-motion) {
+  .card:hover span {
+    transform: none;
+  }
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .content {
+    padding: 4rem;
+  }
+
+  .grid {
+    grid-template-columns: 1fr;
+    margin-bottom: 120px;
+    max-width: 320px;
+    text-align: center;
+  }
+
+  .card {
+    padding: 1rem 2.5rem;
+  }
+
+  .card h2 {
+    margin-bottom: 0.5rem;
+  }
+
+  .center {
+    padding: 8rem 0 6rem;
+  }
+
+  .center::before {
+    transform: none;
+    height: 300px;
+  }
+
+  .description {
+    font-size: 0.8rem;
+  }
+
+  .description a {
+    padding: 1rem;
+  }
+
+  .description p,
+  .description div {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  .description p {
+    align-items: center;
+    inset: 0 0 auto;
+    padding: 2rem 1rem 1.4rem;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(var(--callout-border-rgb), 0.25);
+    background: linear-gradient(to bottom,
+        rgba(var(--background-start-rgb), 1),
+        rgba(var(--callout-rgb), 0.5));
+    background-clip: padding-box;
+    backdrop-filter: blur(24px);
+  }
+
+  .description div {
+    align-items: flex-end;
+    pointer-events: none;
+    inset: auto 0 0;
+    padding: 2rem;
+    height: 200px;
+    background: linear-gradient(to bottom,
+        transparent 0%,
+        rgb(var(--background-end-rgb)) 40%);
+    z-index: 1;
+  }
+}
+
+/* Tablet and Smaller Desktop */
+@media (min-width: 701px) and (max-width: 1120px) {
+  .grid {
+    grid-template-columns: repeat(2, 50%);
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .vercelLogo {
+    filter: invert(1);
+  }
+
+  .logo {
+    filter: invert(1) drop-shadow(0 0 0.3rem #ffffff70);
+  }
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(360deg);
+  }
+
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+/* Landing page helpers */
+.heroTitle {
+  font-weight: 800;
+  letter-spacing: -0.02em;
+}
+
+.heroSubtitle {
+  max-width: 56ch;
+  opacity: 0.85;
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+
+.section {
+  margin-top: 3rem;
+  margin-bottom: 2rem;
+  padding: 2rem;
+  border-radius: var(--border-radius);
+  background: rgba(var(--card-rgb), 0.05);
+  border: 1px solid rgba(var(--card-border-rgb), 0.2);
+}
+
+.section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+.steps {
+  list-style: none;
+  padding-left: 0;
+}
+
+.steps li + li {
+  margin-top: 0.5rem;
+}
+
+.links {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+  padding-left: 1rem;
+}
+
+.links li {
+  list-style: "• ";
+  padding-left: 0.25rem;
+}
+
+/* Make grid wrap nicely if you add/remove cards */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 0.75rem;
+  width: var(--max-width);
+  max-width: 100%;
+}
+
+.card {
+  padding: 1.5rem;
+  border-radius: var(--border-radius);
+  background: rgba(var(--card-rgb), 0.05);
+  border: 1px solid rgba(var(--card-border-rgb), 0.2);
+  transition: background 200ms, transform 150ms;
+}
+
+.card:hover {
+  background: rgba(var(--card-rgb), 0.1);
+  transform: translateY(-3px);
+}
+
+.center {
+  background: linear-gradient(180deg, rgba(0,0,0,0.4) 0%, transparent 100%);
+  padding: 5rem 0;
+}
+
+/* Hero layout (desktop: 2 columns; mobile: stacked) */
+.hero {
+  padding: clamp(3rem, 6vw, 6rem) 0;
+  background: linear-gradient(180deg, rgba(0,0,0,0.45) 0%, transparent 100%);
+}
+
+.heroInner {
+  width: 100%;
+  max-width: var(--max-width);
+  margin: 0 auto;
+  padding: 0 clamp(1rem, 4vw, 2rem);
+  display: grid;
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
+}
+
+@media (min-width: 992px) {
+  .heroInner {
+    grid-template-columns: 1fr 1.2fr;
+    align-items: center;
+  }
+}
+
+/* Left side: logos */
+.heroLogos {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.5rem, 1vw, 1rem);
+  filter: drop-shadow(0 0 0.25rem rgba(255,255,255,0.35));
+}
+
+.plus {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  border: 1px solid rgba(var(--card-border-rgb), 0.25);
+  font-weight: 700;
+  opacity: 0.9;
+}
+
+/* Right side: copy */
+.heroContent {
+  max-width: 720px;
+  margin-inline: auto;
+}
+
+@media (min-width: 992px) {
+  .heroContent {
+    margin-inline: 0;
+  }
+}
+
+.heroTitle {
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  line-height: 1.1;
+  font-size: clamp(2rem, 2.6vw + 1.2rem, 3.25rem);
+  margin: 0;
+}
+
+.heroSubtitle {
+  max-width: 60ch;
+  opacity: 0.9;
+  font-size: clamp(1rem, 0.4vw + 0.95rem, 1.125rem);
+  line-height: 1.65;
+}
+
+/* So the hero doesn't fight with your existing .center styles */
+.center { padding: 0; background: none; }
+
+/* Optional: tame the logo glow in dark mode */
+@media (prefers-color-scheme: dark) {
+  .logo { filter: invert(1) drop-shadow(0 0 0.15rem rgba(255,255,255,0.35)); }
+}
+
+
+.tokenCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  margin-bottom: 1.5rem;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+
+.tokenCard:hover {
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+.tokenHeader {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+  background: linear-gradient(90deg, #00FFA3, #DC1FFF);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.assetId {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #ff69b4;
+  word-break: break-all;
+  opacity: 0.85;
+  transition: opacity 0.2s ease;
+}
+
+.assetId:hover {
+  opacity: 1;
+  text-shadow: 0 0 6px rgba(255, 105, 180, 0.6);
+}
+
+.chainBadge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  margin-left: 0.5rem;
+}
+
+/* Chain-specific colors */
+.chain-near { background: rgba(0, 200, 83, 0.2); color: #00c853; }
+.chain-eth { background: rgba(155, 89, 182, 0.2); color: #9b59b6; }
+.chain-arb { background: rgba(33, 150, 243, 0.2); color: #2196f3; }
+.chain-base { background: rgba(0, 229, 255, 0.2); color: #00e5ff; }
+.chain-sol { background: rgba(255, 152, 0, 0.2); color: #ff9800; }
+.chain-gnosis { background: rgba(0, 200, 180, 0.2); color: #00c8b4; }

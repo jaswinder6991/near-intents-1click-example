@@ -1,0 +1,148 @@
+/* Page header */
+.title {
+  font-size: clamp(1.35rem, 0.9vw + 1.1rem, 1.9rem);
+  font-weight: 800;
+  letter-spacing: -0.015em;
+  margin: 0;
+}
+
+.headerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.rightHeader {
+  display: flex;
+  align-items: center;
+}
+
+/* Card */
+.card {
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.subTitle {
+  font-weight: 700;
+  margin-bottom: 0.75rem;
+}
+
+/* Rows */
+.row {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 0.75rem;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px dashed rgba(255, 255, 255, 0.08);
+}
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  opacity: 0.75;
+  font-size: 0.95rem;
+}
+
+.value {
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.muted {
+  opacity: 0.6;
+}
+
+/* Form */
+.formRow {
+  margin-top: 1rem;
+}
+
+.inputLabel {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.35rem;
+}
+
+.inputGroup {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 0.65rem 0.8rem;
+  border-radius: 0.6rem;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.03);
+  color: inherit;
+  outline: none;
+}
+
+.input:focus {
+  border-color: rgba(255, 255, 255, 0.28);
+}
+
+.actionBtn {
+  padding-inline: 1rem;
+}
+
+/* Hints & notes */
+.hint {
+  margin-top: 0.4rem;
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+.noteOk,
+.noteErr,
+.noteInfo {
+  margin-top: 0.9rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.65rem;
+  font-weight: 600;
+  border: 1px solid transparent;
+}
+
+.noteOk {
+  background: rgba(48, 209, 88, 0.16);
+  color: #2bd96a;
+  border-color: rgba(48, 209, 88, 0.25);
+}
+.noteErr {
+  background: rgba(255, 82, 82, 0.16);
+  color: #ff8080;
+  border-color: rgba(255, 82, 82, 0.25);
+}
+.noteInfo {
+  background: rgba(180, 180, 200, 0.12);
+  color: #d6d8ff;
+  border-color: rgba(180, 180, 200, 0.24);
+}
+
+/* Transaction output */
+.txBox {
+  margin-top: 0.75rem;
+}
+
+.pre {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.85rem;
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 0.5rem;
+  padding: 0.65rem;
+  overflow: auto;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .row {
+    grid-template-columns: 1fr;
+  }
+}
