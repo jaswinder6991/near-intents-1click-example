@@ -1,0 +1,118 @@
+/* Page title & header */
+.title {
+  font-size: clamp(1.6rem, 1.2vw + 1.2rem, 2rem);
+  font-weight: 800;
+  margin-bottom: 1rem;
+}
+
+.headerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.muted {
+  opacity: 0.7;
+}
+
+/* Token cards */
+.tokenCard {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 1rem;
+  padding: 0;
+  margin-bottom: 1.5rem;
+  overflow: hidden;
+  transition: border 0.2s ease, transform 0.2s ease;
+}
+.tokenCard:hover {
+  border-color: rgba(255, 255, 255, 0.25);
+  transform: translateY(-3px);
+}
+
+/* Card header row */
+.cardHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+.symbol {
+  font-weight: 700;
+  font-size: 1rem;
+}
+.count {
+  opacity: 0.75;
+  font-size: 0.9rem;
+}
+
+/* Table layout */
+.tableWrap {
+  width: 100%;
+  overflow-x: auto;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+.table th {
+  text-align: left;
+  padding: 0.75rem 1.25rem;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.04);
+}
+.table td {
+  padding: 0.65rem 1.25rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.table tr:nth-child(odd) td {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.chainCol {
+  width: 140px;
+  white-space: nowrap;
+}
+
+/* Asset ID styling */
+.assetId {
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #ff69b4;
+  opacity: 0.85;
+  word-break: break-all;
+  transition: opacity 0.2s ease;
+}
+.assetId:hover {
+  opacity: 1;
+  text-shadow: 0 0 6px rgba(255, 105, 180, 0.6);
+}
+
+/* Chain badges */
+.badge {
+  display: inline-block;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Specific chain colors */
+.badgeNear { background: rgba(48, 209, 88, 0.18); color: #2bd96a; }
+.badgeEth { background: rgba(180, 180, 200, 0.16); color: #cdd2ff; }
+.badgeArb { background: rgba(0, 116, 217, 0.18); color: #7bb9ff; }
+.badgeBase { background: rgba(44, 124, 255, 0.18); color: #8fb5ff; }
+.badgeOp { background: rgba(255, 71, 71, 0.18); color: #ff8e8e; }
+.badgeSol { background: rgba(0, 230, 118, 0.14); color: #77ffb7; }
+.badgeBsc { background: rgba(255, 193, 7, 0.16); color: #ffd766; }
+.badgeGnosis { background: rgba(0, 150, 136, 0.16); color: #78e6db; }
+.badgePolygon { background: rgba(138, 43, 226, 0.16); color: #c69cff; }
+.badgeAvalanche { background: rgba(220, 20, 60, 0.16); color: #ff9ab0; }
+.badgeGeneric { background: rgba(160, 160, 160, 0.16); color: #d9d9d9; }
